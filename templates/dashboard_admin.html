@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard Admin</title>
+    <style>
+        /* Reset dasar */
+        * {
+            margin: 0; padding: 0; box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            background: url("https://res.cloudinary.com/dvul7dq3b/image/upload/v1755843240/backgroundwebp_vc0pzl.webp") no-repeat center center/cover;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 30px 10px;
+            color: #fff;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            width: 100%;
+            background: rgba(10, 25, 47, 0.85);
+            backdrop-filter: blur(6px);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        .header {
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            padding-bottom: 15px; margin-bottom: 20px;
+        }
+
+        .header h1 { font-size: 26px; font-weight: bold; color: #fff; }
+        .header a {
+            text-decoration: none;
+            background: linear-gradient(135deg, #dc3545, #a71d2a);
+            color: #fff; padding: 10px 18px; border-radius: 8px; font-weight: 600;
+            transition: transform 0.2s, background 0.3s;
+        }
+        .header a:hover { transform: translateY(-2px); background: linear-gradient(135deg, #bd2130, #7b131d); }
+
+        h2 { margin: 20px 0; color: #fff; }
+
+        .actions { margin-bottom: 30px; }
+        .btn {
+            display: inline-block;
+            padding: 10px 15px; border: none; border-radius: 8px;
+            color: white; cursor: pointer; text-decoration: none;
+            margin-right: 10px; font-weight: 600;
+            transition: transform 0.2s, background 0.3s;
+        }
+        .btn:hover { transform: translateY(-2px); }
+
+        .btn-primary { background: linear-gradient(135deg, #007bff, #0056b3); }
+        .btn-secondary { background: linear-gradient(135deg, #6c757d, #495057); }
+        .btn-info { background: linear-gradient(135deg, #17a2b8, #0c6e7d); }
+        .btn-success { background: linear-gradient(135deg, #28a745, #1e7e34); }
+
+        table {
+            width: 100%; border-collapse: collapse; margin-bottom: 30px;
+            color: #fff;
+        }
+        th, td { border: 1px solid rgba(255,255,255,0.2); padding: 10px; text-align: left; }
+        th { background: rgba(255,255,255,0.1); }
+        tr:nth-child(even) { background: rgba(255,255,255,0.05); }
+
+        /* Modal */
+        .modal-backdrop {
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: none; justify-content: center; align-items: center;
+            z-index: 10;
+        }
+        .modal-content {
+            background: rgba(10, 25, 47, 0.95);
+            padding: 20px; border-radius: 12px;
+            width: 80%; max-width: 800px; max-height: 80%; overflow-y: auto;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+            color: #fff;
+        }
+        .modal-header {
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            padding-bottom: 10px;
+        }
+        .close-btn {
+            cursor: pointer; border: none; background: none;
+            font-size: 24px; color: #fff;
+        }
+
+        /* Status warna */
+        .status-red { background-color: rgba(220,53,69,0.2) !important; color: #ff6b6b; }
+        .status-green { background-color: rgba(25,135,84,0.2) !important; color: #00ffb3; }
+        .status-yellow { background-color: rgba(255,193,7,0.2) !important; color: #ffdd57; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="overlay"></div>
+    <div class="container">
+        <div class="header">
+            <h1>Dashboard Admin</h1>
+            <a href="/logout">Logout</a>
+        </div>
+
+        <h2>Menu Aksi</h2>
+        <div class="actions">
+            <a href="{{ url_for('tambah_pengguna') }}" class="btn btn-primary">Tambah Data Akses</a>
+            <a href="{{ url_for('input_cuti') }}" class="btn btn-secondary">Input Cuti Dosen</a>
+            <a href="{{ url_for('rekap_laporan_view') }}" target="_blank" class="btn btn-success">Cek Laporan Bulanan</a>
+        </div>
+
+        <h2>Data Akses Pengguna</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>NIP</th>
+                    <th>Nama Lengkap</th>
+                    <th>Jurusan</th>
+                    <th>Role</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.nip }}</td>
+                    <td>{{ user.nama_lengkap }}</td>
+                    <td>{{ user.jurusan }}</td>
+                    <td>{{ user.role }}</td>
+                    <td>
+                        {% if user.role == 'Dosen' %}
+                            <button class="btn btn-info btn-sm" onclick="showAbsensi('{{ user.nip }}')">Cek Absensi</button>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="modal-backdrop" id="absensiModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Riwayat Absensi Bulan Ini</h3>
+                <button class="close-btn" onclick="hideAbsensi()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                </div>
+        </div>
+    </div>
+
+    <script>
+        const modal = document.getElementById('absensiModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalBody = document.getElementById('modalBody');
+
+        // ====== PERUBAHAN UTAMA: FUNGSI JAVASCRIPT DIPERBARUI ======
+        async function showAbsensi(nip) {
+            modal.style.display = 'flex';
+            modalTitle.textContent = "Memuat data...";
+            modalBody.innerHTML = '<p style="text-align:center;">Mengambil data dari server...</p>';
+
+            try {
+                const response = await fetch(`/get_absensi_summary/${nip}`);
+                if (!response.ok) throw new Error('Network response was not ok.');
+                const data = await response.json();
+                
+                modalTitle.textContent = `Riwayat Absensi: ${data.nama_lengkap}`;
+                
+                let contentHTML = `
+                    <div class="cuti-summary" style="display: flex; justify-content: space-around; text-align: center; margin-bottom: 20px; padding: 10px; background-color: rgba(255,255,255,0.05); border-radius: 8px;">
+                        <div>
+                            <p style="margin: 0; font-size: 12px; color: #adb5bd;">Jatah Cuti Tahunan</p>
+                            <p style="margin: 0; font-size: 18px; font-weight: bold;">${data.jatah_cuti} Hari</p>
+                        </div>
+                        <div>
+                            <p style="margin: 0; font-size: 12px; color: #adb5bd;">Cuti Terpakai</p>
+                            <p style="margin: 0; font-size: 18px; font-weight: bold;">${data.cuti_terpakai} Hari</p>
+                        </div>
+                        <div>
+                            <p style="margin: 0; font-size: 12px; color: #adb5bd;">Sisa Cuti</p>
+                            <p style="margin: 0; font-size: 18px; font-weight: bold; color: #00ffb3;">${data.sisa_cuti} Hari</p>
+                        </div>
+                    </div>
+                    <table style="width: 100%;">
+                        <thead><tr><th>Tanggal</th><th>Jam Masuk</th><th>Jam Pulang</th><th>Status</th></tr></thead>
+                        <tbody>
+                `;
+
+                if (data.records && data.records.length > 0) {
+                    data.records.forEach(rec => {
+                        contentHTML += `
+                            <tr>
+                                <td>${rec.tanggal_formatted}</td>
+                                <td>${rec.jam_masuk_formatted}</td>
+                                <td>${rec.jam_pulang_formatted}</td>
+                                <td class="${rec.status_color}">${rec.status_text}</td>
+                            </tr>`;
+                    });
+                } else {
+                    contentHTML += `<tr><td colspan="4" style="text-align:center;">Tidak ada data.</td></tr>`;
+                }
+
+                contentHTML += `</tbody></table>`;
+                modalBody.innerHTML = contentHTML;
+
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                modalTitle.textContent = 'Gagal Memuat Data';
+                modalBody.innerHTML = '<p style="text-align:center; color: #ff6b6b;">Terjadi kesalahan saat mengambil data.</p>';
+            }
+        }
+
+        function hideAbsensi() {
+            modal.style.display = 'none';
+        }
+    </script>
+</body>
+</html>

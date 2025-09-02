@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard Kajur</title>
+<style>
+    /* Reset dasar */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        min-height: 100vh;
+        background: url("https://res.cloudinary.com/dvul7dq3b/image/upload/v1755843240/backgroundwebp_vc0pzl.webp") no-repeat center center/cover;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 30px 10px;
+        color: #fff;
+    }
+
+    .overlay {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0,0,0,0.6);
+        z-index: 0;
+    }
+
+    .container {
+        position: relative;
+        z-index: 1;
+        max-width: 1000px;
+        width: 100%;
+        background: rgba(10, 25, 47, 0.85);
+        backdrop-filter: blur(6px);
+        padding: 30px;
+        border-radius: 16px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+        animation: fadeIn 0.8s ease-in-out;
+    }
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid rgba(255,255,255,0.2);
+        padding-bottom: 15px;
+        margin-bottom: 20px;
+    }
+
+    .header h1 {
+        margin: 0;
+        font-size: 26px;
+        font-weight: bold;
+        color: #fff;
+    }
+
+    .header a {
+        text-decoration: none;
+        background: linear-gradient(135deg, #dc3545, #a71d2a);
+        color: #fff;
+        padding: 10px 18px;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: transform 0.2s, background 0.3s;
+    }
+
+    .header a:hover {
+        transform: translateY(-2px);
+        background: linear-gradient(135deg, #bb2d3b, #801622);
+    }
+
+    .info-box {
+        background: rgba(255,255,255,0.05);
+        border-left: 5px solid #0d6efd;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+
+    .info-box p { margin: 6px 0; }
+
+    h2 {
+        margin: 25px 0 10px 0;
+        border-bottom: 1px solid rgba(255,255,255,0.2);
+        padding-bottom: 6px;
+        font-size: 20px;
+        color: #fff;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+        color: #fff;
+    }
+
+    th, td {
+        border: 1px solid rgba(255,255,255,0.2);
+        padding: 12px;
+        text-align: left;
+    }
+
+    th {
+        background: rgba(255,255,255,0.1);
+        font-weight: 600;
+    }
+
+    tr:nth-child(even) {
+        background: rgba(255,255,255,0.05);
+    }
+
+    .btn {
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-weight: bold;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+        transition: transform 0.2s, opacity 0.3s;
+    }
+
+    .btn:hover { transform: translateY(-2px); opacity: 0.9; }
+
+    .btn-info { background: linear-gradient(135deg, #0d6efd, #0a58ca); }
+    .btn-success { background: linear-gradient(135deg, #198754, #0f5132); }
+    .btn-danger { background: linear-gradient(135deg, #dc3545, #a71d2a); }
+
+    /* Status warna */
+    .status-red { background-color: rgba(220,53,69,0.2); color: #ff6b6b; }
+    .status-green { background-color: rgba(25,135,84,0.2); color: #00ffb3; }
+    .status-yellow { background-color: rgba(255,193,7,0.2); color: #ffdd57; }
+
+    /* Modal */
+    .modal-backdrop {
+        position: fixed; top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0,0,0,0.6);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 100;
+    }
+    .modal-content {
+        background: rgba(10,25,47,0.95);
+        padding: 20px;
+        border-radius: 12px;
+        width: 80%;
+        max-width: 800px;
+        max-height: 80%;
+        overflow-y: auto;
+        color: #fff;
+    }
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid rgba(255,255,255,0.2);
+        padding-bottom: 10px;
+    }
+    .close-btn {
+        cursor: pointer;
+        border: none;
+        background: none;
+        font-size: 24px;
+        color: #fff;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+
+</head>
+<body>
+  <div class="overlay"></div>
+  <div class="container">
+    <div class="header">
+      <h1>Dashboard Kajur</h1>
+      <div>
+        <a href="{{ url_for('history') }}" class="btn btn-info" style="margin-right: 10px;">Riwayat Persetujuan</a>
+        <a href="/logout" class="btn btn-danger">Logout</a>
+      </div>
+    </div>
+
+    <div class="info-box">
+      <p><strong>Nama:</strong> {{ session['user_name'] }}</p>
+      <p><strong>Jurusan:</strong> {{ session['user_jurusan'] }}</p>
+    </div>
+
+    <h2>Daftar Pengajuan Klarifikasi</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Tgl Pengajuan</th>
+          <th>Nama Dosen</th>
+          <th>Tgl Klarifikasi</th>
+          <th>Jenis Surat</th>
+          <th>File Bukti</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for klarifikasi in records %}
+        <tr>
+          <td>{{ klarifikasi.tanggal_pengajuan.split(' ')[0] }}</td>
+          <td>{{ klarifikasi.nama_lengkap }}</td>
+          <td>{{ klarifikasi.tanggal_klarifikasi.split(' ')[0] }}</td>
+          <td>{{ klarifikasi.jenis_surat }}</td>
+          <td>
+            {% if klarifikasi.file_bukti %}
+              <a href="{{ url_for('uploaded_file', filename=klarifikasi.file_bukti.split('\\')[-1]) }}" target="_blank">Lihat Bukti</a>
+            {% else %} - {% endif %}
+          </td>
+          <td>
+            <form style="display:inline;" action="/proses_klarifikasi" method="post">
+              <input type="hidden" name="clarification_id" value="{{ klarifikasi.id }}">
+              <button type="submit" name="action" value="setuju" class="btn btn-success">Setujui</button>
+            </form>
+            <form style="display:inline;" action="/proses_klarifikasi" method="post" onsubmit="return handleTolak(this);">
+              <input type="hidden" name="clarification_id" value="{{ klarifikasi.id }}">
+              <input type="hidden" name="alasan_penolakan" value="">
+              <button type="submit" name="action" value="tolak" class="btn btn-danger">Tolak</button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" style="text-align: center;">Tidak ada pengajuan klarifikasi.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <h2>Daftar Dosen Jurusan {{ session['user_jurusan'] }}</h2>
+    <table>
+      <thead>
+        <tr><th>NIP</th><th>Nama Lengkap</th><th>Aksi</th></tr>
+      </thead>
+      <tbody>
+        {% for dosen in dosen_list %}
+        <tr>
+          <td>{{ dosen.nip }}</td>
+          <td>{{ dosen.nama_lengkap }}</td>
+          <td><button class="btn btn-info btn-sm" onclick="showAbsensi('{{ dosen.nip }}')">Cek Absensi</button></td>
+        </tr>
+        {% else %}
+        <tr><td colspan="3" style="text-align: center;">Tidak ada data dosen.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="modal-backdrop" id="absensiModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modalTitle">Riwayat Absensi</h3>
+        <button class="close-btn" onclick="hideAbsensi()">&times;</button>
+      </div>
+      <div class="modal-body" id="modalBody">
+        </div>
+    </div>
+  </div>
+
+  <script>
+    function handleTolak(form) {
+      const alasan = prompt("Silakan masukkan alasan penolakan:");
+      if (alasan) { form.alasan_penolakan.value = alasan; return true; }
+      return false;
+    }
+
+    const modal = document.getElementById('absensiModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalBody = document.getElementById('modalBody');
+
+    // ====== PERUBAHAN UTAMA: FUNGSI JAVASCRIPT DIPERBARUI ======
+    async function showAbsensi(nip) {
+      modal.style.display = 'flex';
+      modalTitle.textContent = "Memuat data...";
+      modalBody.innerHTML = '<p style="text-align:center;">Mengambil data dari server...</p>';
+
+      try {
+        const response = await fetch(`/get_absensi_summary/${nip}`);
+        if (!response.ok) throw new Error('Network response was not ok.');
+        const data = await response.json();
+        
+        modalTitle.textContent = `Riwayat Absensi: ${data.nama_lengkap}`;
+        
+        let contentHTML = `
+            <div class="cuti-summary" style="display: flex; justify-content: space-around; text-align: center; margin-bottom: 20px; padding: 10px; background-color: rgba(255,255,255,0.05); border-radius: 8px;">
+                <div>
+                    <p style="margin: 0; font-size: 12px; color: #adb5bd;">Jatah Cuti Tahunan</p>
+                    <p style="margin: 0; font-size: 18px; font-weight: bold;">${data.jatah_cuti} Hari</p>
+                </div>
+                <div>
+                    <p style="margin: 0; font-size: 12px; color: #adb5bd;">Cuti Terpakai</p>
+                    <p style="margin: 0; font-size: 18px; font-weight: bold;">${data.cuti_terpakai} Hari</p>
+                </div>
+                <div>
+                    <p style="margin: 0; font-size: 12px; color: #adb5bd;">Sisa Cuti</p>
+                    <p style="margin: 0; font-size: 18px; font-weight: bold; color: #00ffb3;">${data.sisa_cuti} Hari</p>
+                </div>
+            </div>
+            <table style="width: 100%;">
+                <thead><tr><th>Tanggal</th><th>Jam Masuk</th><th>Jam Pulang</th><th>Status</th></tr></thead>
+                <tbody>
+        `;
+
+        if (data.records && data.records.length > 0) {
+          data.records.forEach(rec => {
+            contentHTML += `
+              <tr>
+                <td>${rec.tanggal_formatted}</td>
+                <td>${rec.jam_masuk_formatted}</td>
+                <td>${rec.jam_pulang_formatted}</td>
+                <td class="${rec.status_color}">${rec.status_text}</td>
+              </tr>`;
+          });
+        } else {
+          contentHTML += `<tr><td colspan="4" style="text-align:center;">Tidak ada data absensi untuk bulan ini.</td></tr>`;
+        }
+
+        contentHTML += `</tbody></table>`;
+        modalBody.innerHTML = contentHTML;
+
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        modalTitle.textContent = 'Gagal Memuat Data';
+        modalBody.innerHTML = '<p style="text-align:center; color: #ff6b6b;">Terjadi kesalahan saat mengambil data.</p>';
+      }
+    }
+
+    function hideAbsensi() {
+      modal.style.display = 'none';
+    }
+  </script>
+</body>
+</html>

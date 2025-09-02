@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Riwayat Klarifikasi</title>
+    <style>
+        /* Reset dasar */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            background: url("https://res.cloudinary.com/dvul7dq3b/image/upload/v1755843240/backgroundwebp_vc0pzl.webp") no-repeat center center/cover;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 30px 10px;
+            color: #fff;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            width: 100%;
+            background: rgba(10, 25, 47, 0.85);
+            backdrop-filter: blur(6px);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 26px;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .btn {
+            text-decoration: none;
+            background: linear-gradient(135deg, #6c757d, #495057);
+            color: #fff;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: transform 0.2s, background 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            background: linear-gradient(135deg, #5a6268, #343a40);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+
+        th, td {
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background: rgba(255,255,255,0.1);
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background: rgba(255,255,255,0.05);
+        }
+
+        /* Status warna */
+        .status-Disetujui {
+            background-color: rgba(25,135,84,0.2);
+            color: #00ffb3;
+            font-weight: 600;
+        }
+
+        .status-Ditolak {
+            background-color: rgba(220,53,69,0.2);
+            color: #ff6b6b;
+            font-weight: 600;
+        }
+
+        .status-Menunggu {
+            background-color: rgba(255,193,7,0.2);
+            color: #ffdd57;
+            font-weight: 600;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="overlay"></div>
+    <div class="container">
+        <div class="header">
+            <h1>Riwayat Klarifikasi</h1>
+            <a href="{{ url_for('dashboard_dosen') if session['user_role'] == 'Dosen' else url_for('dashboard_kajur') }}" class="btn">Kembali ke Dashboard</a>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    {% if session['user_role'] == 'Kajur' %}<th>Nama Dosen</th>{% endif %}
+                    <th>Tgl Pengajuan</th>
+                    <th>Tgl Klarifikasi</th>
+                    <th>Status</th>
+                    <th>Alasan Penolakan</th>
+                    <th>Tgl Diproses</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in records %}
+                <tr>
+                    {% if session['user_role'] == 'Kajur' %}<td>{{ record.nama_lengkap }}</td>{% endif %}
+                    <td>{{ record.tanggal_pengajuan.split(' ')[0] }}</td>
+                    <td>{{ record.tanggal_klarifikasi.split(' ')[0] }}</td>
+                    <td class="status-{{ record.status.split(' ')[0] }}">{{ record.status }}</td>
+                    <td>{{ record.alasan_penolakan or '-' }}</td>
+                    <td>{{ record.tanggal_proses.split(' ')[0] if record.tanggal_proses else '-' }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" style="text-align: center;">Tidak ada riwayat.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

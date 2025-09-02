@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Tambah Pengguna Baru</title>
+  <style>
+    /* Reset dasar */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: url("https://res.cloudinary.com/dvul7dq3b/image/upload/v1755843240/backgroundwebp_vc0pzl.webp") no-repeat center center/cover;
+    }
+
+    .overlay {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 0;
+    }
+
+    .form-container {
+      position: relative;
+      z-index: 1;
+      background: rgba(10, 25, 47, 0.85); /* biru gelap transparan */
+      padding: 35px 30px;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+      width: 400px;
+      animation: fadeIn 0.8s ease-in-out;
+      color: #fff;
+      backdrop-filter: blur(6px);
+    }
+
+    .form-container img {
+      display: block;
+      margin: 0 auto 15px;
+      width: 80px;
+    }
+
+    .form-container h2 {
+      margin-bottom: 25px;
+      text-align: center;
+      color: #fff;
+      font-size: 22px;
+      letter-spacing: 0.5px;
+    }
+
+    .input-group {
+      margin-bottom: 18px;
+      text-align: left;
+    }
+
+    .input-group label {
+      font-size: 14px;
+      color: #ddd;
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .input-group input,
+    .input-group select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 8px;
+      outline: none;
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      font-size: 14px;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    .input-group input::placeholder {
+      color: rgba(255,255,255,0.6);
+    }
+
+    .input-group input:focus,
+    .input-group select:focus {
+      border-color: #66b2ff;
+      box-shadow: 0 0 6px rgba(102,178,255,0.5);
+    }
+
+    .actions {
+      margin-top: 20px;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, background 0.3s;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #007bff, #0056b3);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      background: linear-gradient(135deg, #0069d9, #004494);
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.15);
+      color: #ddd;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.25);
+      transform: translateY(-2px);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay"></div>
+
+  <div class="form-container">
+    <img src="https://res.cloudinary.com/dvul7dq3b/image/upload/v1755843240/logowebp_bqssky.webp" alt="Logo">
+    <h2>Formulir Pengguna Baru</h2>
+
+    <form method="post">
+      <div class="input-group">
+        <label for="nip">NIP</label>
+        <input type="text" id="nip" name="nip" required>
+      </div>
+
+      <div class="input-group">
+        <label for="password">Password</label>
+        <input type="text" id="password" name="password" required>
+      </div>
+
+      <div class="input-group">
+        <label for="nama_lengkap">Nama Lengkap</label>
+        <input type="text" id="nama_lengkap" name="nama_lengkap" required>
+      </div>
+
+      <div class="input-group">
+        <label for="jurusan">Jurusan</label>
+        <select id="jurusan" name="jurusan" required>
+          <option value="">-- Pilih Jurusan --</option>
+          <option value="BP">BP</option>
+          <option value="BT">BT</option>
+          <option value="THP">THP</option>
+          <option value="PKH">PKH</option>
+          <option value="RPK">RPK</option>
+        </select>
+      </div>
+
+      <div class="input-group">
+        <label for="detail_jurusan">Detail Jurusan</label>
+        <input type="text" id="detail_jurusan" name="detail_jurusan" required readonly>
+      </div>
+
+      <div class="input-group">
+        <label for="role">Role</label>
+        <select id="role" name="role" required>
+          <option value="Dosen">Dosen</option>
+          <option value="Kajur">Kajur</option>
+          <option value="Admin">Admin</option>
+        </select>
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="btn btn-primary">Simpan</button>
+        <a href="{{ url_for('dashboard_admin') }}" class="btn btn-secondary">Batal</a>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    const detailJurusanMap = {
+      'BP': 'Jurusan Bisnis Pertanian',
+      'BT': 'Jurusan Budidaya Tanaman',
+      'THP': 'Jurusan Teknologi Hasil Pertanian',
+      'PKH': 'Jurusan Peternakan dan Kesehatan Hewan',
+      'RPK': 'Jurusan Rekayasa Pertanian dan Komputer'
+    };
+
+    const jurusanSelect = document.getElementById('jurusan');
+    const detailJurusanInput = document.getElementById('detail_jurusan');
+
+    jurusanSelect.addEventListener('change', function() {
+      const selectedJurusan = this.value;
+      detailJurusanInput.value = detailJurusanMap[selectedJurusan] || '';
+    });
+  </script>
+</body>
+</html>

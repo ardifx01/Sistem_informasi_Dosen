@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Input Cuti Dosen</title>
+  <style>
+    /* Reset dasar */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: url("https://res.cloudinary.com/dvul7dq3b/image/upload/v1755843240/backgroundwebp_vc0pzl.webp") no-repeat center center/cover;
+      padding: 30px 15px;
+    }
+
+    .overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 0;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      background: rgba(10, 25, 47, 0.88); /* biru gelap transparan */
+      padding: 30px 25px;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+      width: 100%;
+      max-width: 750px;
+      color: #fff;
+      backdrop-filter: blur(6px);
+      margin-bottom: 25px;
+      animation: fadeIn 0.8s ease-in-out;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .header img {
+      width: 70px;
+      margin-bottom: 10px;
+    }
+
+    h1, h2 {
+      margin: 0;
+      font-size: 22px;
+      color: #fff;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+      text-align: left;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+      font-size: 14px;
+      color: #ddd;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 8px;
+      outline: none;
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      font-size: 14px;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    input::placeholder, textarea::placeholder {
+      color: rgba(255,255,255,0.6);
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: #66b2ff;
+      box-shadow: 0 0 6px rgba(102,178,255,0.5);
+    }
+
+    textarea {
+      resize: vertical;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, background 0.3s;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #007bff, #0056b3);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      background: linear-gradient(135deg, #0069d9, #004494);
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.15);
+      color: #ddd;
+      margin-left: 10px;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.25);
+      transform: translateY(-2px);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+      font-size: 14px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    th, td {
+      border: 1px solid rgba(255,255,255,0.15);
+      padding: 10px;
+      text-align: left;
+      color: #eee;
+    }
+
+    th {
+      background: rgba(255,255,255,0.1);
+      font-weight: 600;
+      color: #fff;
+    }
+
+    td a {
+      color: #66b2ff;
+      text-decoration: underline;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ... (kode CSS Anda yang lain) ... */
+    
+    /* ===== STYLE BARU UNTUK NOTIFIKASI ===== */
+    .flash-messages {
+        margin-bottom: 20px;
+    }
+    .alert {
+        padding: 15px;
+        border-radius: 8px;
+        border: 1px solid transparent;
+        font-weight: 500;
+    }
+    .alert-success {
+        color: #0f5132;
+        background-color: #d1e7dd;
+        border-color: #badbcc;
+    }
+    .alert-error {
+        color: #842029;
+        background-color: #f8d7da;
+        border-color: #f5c2c7;
+    }
+    /* ===== AKHIR STYLE BARU ===== */
+
+  </style>
+</head>
+<body>
+  <div class="overlay"></div>
+
+  <!-- Form Input -->
+  <div class="container">
+    <div class="header">
+      <img src="https://res.cloudinary.com/dvul7dq3b/image/upload/v1755843240/logowebp_bqssky.webp" alt="Logo">
+      <h1>Formulir Input Cuti Dosen</h1>
+    </div>
+
+    <form method="post" enctype="multipart/form-data">
+      <div class="form-group">
+        <label for="nip_input">NIP</label>
+        <input list="nip_list" id="nip_input" name="nip" required autocomplete="off">
+        <datalist id="nip_list">
+          {% for dosen in list_dosen %}
+            <option value="{{ dosen.nip }}">{{ dosen.nama_lengkap }}</option>
+          {% endfor %}
+        </datalist>
+      </div>
+
+      <div class="form-group">
+        <label for="nama_input">Nama Dosen</label>
+        <input list="nama_list" id="nama_input" name="nama_lengkap" required autocomplete="off">
+        <datalist id="nama_list">
+          {% for dosen in list_dosen %}
+            <option value="{{ dosen.nama_lengkap }}">{{ dosen.nip }}</option>
+          {% endfor %}
+        </datalist>
+      </div>
+
+      <div class="form-group">
+        <label for="tanggal_surat">Tanggal Surat</label>
+        <input type="date" id="tanggal_surat" name="tanggal_surat" required>
+      </div>
+
+      <div class="form-group">
+        <label for="start_date">Tanggal Mulai Cuti</label>
+        <input type="date" id="start_date" name="start_date" required>
+      </div>
+
+      <div class="form-group">
+        <label for="end_date">Tanggal Akhir Cuti</label>
+        <input type="date" id="end_date" name="end_date" required>
+      </div>
+
+      <div class="form-group">
+        <label for="jenis_cuti">Jenis Cuti</label>
+        <select id="jenis_cuti" name="jenis_cuti" required>
+          <option value="Cuti Tahunan">Cuti Tahunan</option>
+          <option value="Cuti Besar">Cuti Besar</option>
+          <option value="Cuti Sakit">Cuti Sakit</option>
+          <option value="Cuti Bersalin">Cuti Bersalin</option>
+          <option value="Cuti Alasan Penting">Cuti Alasan Penting</option>
+          <option value="Cuti CLTN">Cuti CLTN</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="alasan_cuti">Alasan Cuti</label>
+        <textarea id="alasan_cuti" name="alasan_cuti" rows="3" placeholder="Tuliskan alasan cuti..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="file_surat_cuti">Upload Surat Cuti</label>
+        <input type="file" id="file_surat_cuti" name="file_surat_cuti">
+      </div>
+
+      <button type="submit" class="btn btn-primary">Simpan</button>
+      <a href="{{ url_for('dashboard_admin') }}" class="btn btn-secondary">Batal</a>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="flash-messages">
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }}">{{ message }}</div>
+    {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+<form method="post" enctype="multipart/form-data">
+    </form>
+  </div>
+
+  <!-- Tabel Riwayat -->
+  <div class="container">
+    <h2>Riwayat Input Cuti</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Tanggal Surat</th>
+          <th>Nama Dosen</th>
+          <th>Jenis Cuti</th>
+          <th>Rentang Cuti</th>
+          <th>Surat</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for history in histories %}
+        <tr>
+          <td>{{ history.tanggal_surat }}</td>
+          <td>{{ history.nama_lengkap }}</td>
+          <td>{{ history.jenis_cuti }}</td>
+          <td>{{ history.tanggal_mulai }} s/d {{ history.tanggal_selesai }}</td>
+          <td>
+            {% if history.file_surat_cuti %}
+              <a href="{{ url_for('uploaded_file', filename=history.file_surat_cuti.split('\\')[-1]) }}" target="_blank">Lihat</a>
+            {% else %}
+              -
+            {% endif %}
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="5" style="text-align: center; color: #bbb;">Belum ada riwayat cuti yang diinput.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    // Sinkronisasi NIP dan Nama
+    const listDosen = {{ list_dosen | tojson }};
+    const nipInput = document.getElementById('nip_input');
+    const namaInput = document.getElementById('nama_input');
+
+    nipInput.addEventListener('input', function() {
+      const selectedDosen = listDosen.find(d => d.nip === this.value);
+      if (selectedDosen) {
+        namaInput.value = selectedDosen.nama_lengkap;
+      }
+    });
+
+    namaInput.addEventListener('input', function() {
+      const selectedDosen = listDosen.find(d => d.nama_lengkap === this.value);
+      if (selectedDosen) {
+        nipInput.value = selectedDosen.nip;
+      }
+    });
+  </script>
+</body>
+</html>

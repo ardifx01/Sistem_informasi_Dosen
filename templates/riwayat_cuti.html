@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Riwayat Cuti</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            background: url("https://res.cloudinary.com/dvul7dq3b/image/upload/v1755843240/backgroundwebp_vc0pzl.webp") no-repeat center center/cover;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 30px 10px;
+            color: #fff;
+        }
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 900px;
+            width: 100%;
+            background: rgba(10, 25, 47, 0.85);
+            backdrop-filter: blur(6px);
+            padding: 30px;
+            border-radius: 16px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        .header h1 { font-size: 26px; }
+        .header a {
+            text-decoration: none;
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        .header a:hover { background: rgba(255,255,255,0.2); }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 12px;
+            text-align: left;
+        }
+        th { background: rgba(255,255,255,0.1); }
+        tr:nth-child(even) { background: rgba(255,255,255,0.05); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Riwayat Cuti: {{ nama_dosen }}</h1>
+            <a href="{{ url_for('dashboard_dosen') }}">Kembali ke Dashboard</a>
+        </div>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Jenis Cuti</th>
+                    <th>Rentang Tanggal</th>
+                    <th>Alasan</th>
+                    <th>Tanggal Diinput</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cuti in riwayat %}
+                <tr>
+                    <td>{{ cuti.jenis_cuti }}</td>
+                    <td>{{ cuti.tanggal_mulai }} s/d {{ cuti.tanggal_selesai }}</td>
+                    <td>{{ cuti.alasan_cuti or '-' }}</td>
+                    <td>{{ cuti.tanggal_input.split(' ')[0] }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="4" style="text-align: center;">Tidak ada riwayat cuti yang ditemukan.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

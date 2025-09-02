@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard Dosen</title>
+    <style>
+        /* Reset dasar */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            background: url("https://res.cloudinary.com/dvul7dq3b/image/upload/v1755843240/backgroundwebp_vc0pzl.webp") no-repeat center center/cover;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 30px 10px;
+            color: #fff;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1000px;
+            width: 100%;
+            background: rgba(10, 25, 47, 0.85);
+            backdrop-filter: blur(6px);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 26px;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .header a {
+            text-decoration: none;
+            background: linear-gradient(135deg, #dc3545, #a71d2a);
+            color: #fff;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: transform 0.2s, background 0.3s;
+        }
+
+        .header a:hover {
+            transform: translateY(-2px);
+            background: linear-gradient(135deg, #bb2d3b, #801622);
+        }
+
+        .info-box {
+            background: rgba(255,255,255,0.05);
+            border-left: 5px solid #0d6efd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .info-box p {
+            margin: 6px 0;
+        }
+
+        .info-cuti {
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .info-cuti div p:first-child {
+            font-size: 12px;
+            color: #ccc;
+        }
+
+        .info-cuti div p:last-child {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .info-cuti div:last-child p:last-child {
+            color: #00ffb3;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+
+        th, td {
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background: rgba(255,255,255,0.1);
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background: rgba(255,255,255,0.05);
+        }
+
+        .form-klarifikasi {
+            background: rgba(255,255,255,0.05);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.2);
+            margin-top: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .form-group select, .form-group input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            outline: none;
+        }
+
+        .form-group select option {
+            color: #000; /* supaya pilihan tetap terbaca */
+        }
+
+        button {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: #fff;
+            padding: 12px 18px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: transform 0.2s, background 0.3s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            background: linear-gradient(135deg, #0069d9, #004494);
+        }
+
+        .status-red { background-color: rgba(220,53,69,0.2); color: #ff6b6b; }
+        .status-green { background-color: rgba(25,135,84,0.2); color: #00ffb3; }
+        .status-yellow { background-color: rgba(255,193,7,0.2); color: #ffdd57; }
+
+        /* Pesan flash */
+        .flash-messages {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 20px 0;
+        }
+        .flash-messages li {
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+        .flash-messages .success {
+            background-color: rgba(25,135,84,0.3);
+            color: #00ffb3;
+            border: 1px solid rgba(25,135,84,0.5);
+        }
+        .flash-messages .error {
+            background-color: rgba(220,53,69,0.3);
+            color: #ff6b6b;
+            border: 1px solid rgba(220,53,69,0.5);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="overlay"></div>
+    <div class="container">
+        <div class="header">
+            <h1>Dashboard Dosen</h1>
+            <a href="/logout">Logout</a>
+        </div>
+
+        <div class="info-box">
+            <p><strong>NIP:</strong> {{ session['user_id'] }}</p>
+            <p><strong>Nama:</strong> {{ session['user_name'] }}</p>
+            <p><strong>Jurusan:</strong> {{ session['user_jurusan'] }}</p>
+            
+            <hr>
+            <div class="info-cuti">
+                <div>
+                    <p>Jatah Cuti Tahunan</p>
+                    <p>{{ jatah_cuti }} Hari</p>
+                </div>
+                <div>
+                    <p>Cuti Terpakai</p>
+                    <p>{{ cuti_terpakai }} Hari</p>
+                </div>
+             <div>
+                    <p style="margin: 0; font-size: 12px; color: #555;">Sisa Cuti</p>
+                    <p style="margin: 0; font-size: 20px; font-weight: bold; color: #198754;">
+                        {{ sisa_cuti }} Hari
+                        <a href="{{ url_for('riwayat_cuti') }}" style="font-size: 10px; text-decoration: none; color: #007bff; display: block;">(Lihat Riwayat)</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <ul class="flash-messages">
+            {% for category, message in messages %}
+              <li class="{{ category }}">{{ message }}</li>
+            {% endfor %}
+            </ul>
+          {% endif %}
+        {% endwith %}
+
+        <form action="/submit_klarifikasi" method="post" enctype="multipart/form-data">
+            <h2 style="margin-bottom: 15px;">Riwayat Absensi Anda</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Pilih</th>
+                        <th>Tanggal</th>
+                        <th>Jam Masuk</th>
+                        <th>Jam Pulang</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for absen in records %}
+                    <tr>
+                        <td>
+                            <input type="checkbox" name="record_ids" value="{{ absen.id }}" 
+                            {% if not absen.checkbox_enabled %}disabled{% endif %} onchange="toggleForm()">
+                        </td>
+                        <td>{{ absen.tanggal_formatted }}</td>
+                        <td>{{ absen.jam_masuk_formatted }}</td>
+                        <td>{{ absen.jam_pulang_formatted }}</td>
+                        <td class="status-{{ absen.status_color }}">{{ absen.status_text }}</td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="5" style="text-align: center;">Tidak ada data absensi yang ditemukan.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div id="formKlarifikasi" class="form-klarifikasi" style="display:none;">
+                <h3 style="margin-bottom: 15px;">Formulir Pengajuan Klarifikasi</h3>
+                <div class="form-group">
+                    <label for="kategori_surat">Kategori Surat</label>
+                    <select id="kategori_surat" name="kategori_surat" required>
+                        <option value="">-- Pilih Kategori --</option>
+                        <option value="Fleksibel">Fleksibel</option>
+                        <option value="Non Fleksibel">Non Fleksibel</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="jenis_surat">Jenis Surat</label>
+                    <select id="jenis_surat" name="jenis_surat" required>
+                        <option value="">-- Pilih Jenis --</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="file_bukti">Upload Bukti (JPG, PDF)</label>
+                    <input type="file" id="file_bukti" name="file_bukti" accept=".jpg,.jpeg,.png,.pdf">
+                </div>
+
+                <!-- Di dalam <div id="formKlarifikasi" ... > -->
+
+<!-- ... (elemen form Anda yang lain seperti dropdown dan upload file) ... -->
+
+<div id="kuota-warning" style="display:none; color: #842029; background-color: #f8d7da; border: 1px solid #f5c2c7; padding: 10px; border-radius: 5px; margin-bottom: 15px; text-align: center;"></div>
+
+<button type="submit">Kirim Klarifikasi</button>
+
+            </div>
+        </form>
+    </div>
+
+<script>
+    // Ambil semua data absensi dari backend
+    const allRecords = {{ records_json | tojson }};
+
+    // Referensi ke elemen-elemen form
+    const formKlarifikasi = document.getElementById('formKlarifikasi');
+    const kategoriSelect = document.getElementById('kategori_surat');
+    const jenisSelect = document.getElementById('jenis_surat');
+    const submitButton = document.querySelector('#formKlarifikasi button[type="submit"]');
+
+    // Data kuota dari backend
+    const kuotaLupaMasuk = {{ lupa_masuk_count }};
+    const kuotaLupaPulang = {{ lupa_pulang_count }};
+    const MAKSIMAL_KUOTA = 2;
+    const kuotaWarningDiv = document.getElementById('kuota-warning');
+
+    // Opsi default untuk jenis surat
+    const jenisOptions = {
+        'Fleksibel': ['Perjalanan Dinas', 'Tugas Penelitian', 'Pengabdian Masyarakat', 'Tugas Belajar', 'Tugas Lainnya'],
+        'Non Fleksibel': ['Lupa Absen Masuk', 'Lupa Absen Pulang']
+    };
+
+    // Fungsi untuk memperbarui dropdown 'Jenis Surat' berdasarkan 'Kategori'
+    kategoriSelect.addEventListener('change', function() {
+        const selectedKategori = this.value;
+        jenisSelect.innerHTML = '<option value="">-- Pilih Jenis --</option>';
+        if (selectedKategori && jenisOptions[selectedKategori]) {
+            jenisOptions[selectedKategori].forEach(function(jenis) {
+                const option = new Option(jenis, jenis);
+                jenisSelect.add(option);
+            });
+        }
+        updateFormAndOptions(); // Panggil fungsi utama setelah dropdown diperbarui
+    });
+
+    // Fungsi utama yang dipanggil setiap kali checkbox atau dropdown berubah
+    function updateFormAndOptions() {
+        const checkedBoxes = document.querySelectorAll('input[name="record_ids"]:checked');
+        
+        // 1. Tampilkan atau sembunyikan form
+        formKlarifikasi.style.display = checkedBoxes.length > 0 ? 'block' : 'none';
+
+        // 2. Reset semua opsi 'Lupa Absen' ke kondisi normal
+        const optionLupaMasuk = jenisSelect.querySelector("option[value='Lupa Absen Masuk']");
+        const optionLupaPulang = jenisSelect.querySelector("option[value='Lupa Absen Pulang']");
+        if (optionLupaMasuk) {
+            optionLupaMasuk.disabled = false;
+            optionLupaMasuk.innerText = `Lupa Absen Masuk (Sisa: ${MAKSIMAL_KUOTA - kuotaLupaMasuk})`;
+        }
+        if (optionLupaPulang) {
+            optionLupaPulang.disabled = false;
+            optionLupaPulang.innerText = `Lupa Absen Pulang (Sisa: ${MAKSIMAL_KUOTA - kuotaLupaPulang})`;
+        }
+        
+        // 3. Logika untuk menonaktifkan opsi berdasarkan kondisi absensi
+        if (checkedBoxes.length > 0 && kategoriSelect.value === 'Non Fleksibel') {
+            const firstRecordId = parseInt(checkedBoxes[0].value, 10);
+            const recordData = allRecords.find(rec => rec.id === firstRecordId);
+
+            if (recordData) {
+                const jamMasukAda = recordData.jam_masuk_formatted.trim() !== '-';
+                const jamPulangAda = recordData.jam_pulang_formatted.trim() !== '-';
+
+                if (jamMasukAda && !jamPulangAda) { // Jam masuk ada, jam pulang kosong
+                    if (optionLupaMasuk) optionLupaMasuk.disabled = true;
+                    if (optionLupaPulang) optionLupaPulang.selected = true;
+                } else if (!jamMasukAda && jamPulangAda) { // Jam masuk kosong, jam pulang ada
+                    if (optionLupaPulang) optionLupaPulang.disabled = true;
+                    if (optionLupaMasuk) optionLupaMasuk.selected = true;
+                }
+            }
+        }
+
+        // 4. Panggil fungsi cek kuota untuk menampilkan peringatan & menonaktifkan tombol submit
+        cekKuota();
+    }
+
+    // Fungsi untuk mengecek kuota dan menampilkan peringatan
+    function cekKuota() {
+        const pilihan = jenisSelect.value;
+        let pesan = "";
+        let tombolDisabled = false;
+
+        if (pilihan === 'Lupa Absen Masuk' && kuotaLupaMasuk >= MAKSIMAL_KUOTA) {
+            pesan = `Anda sudah mencapai batas maksimal (2x) untuk pengajuan 'Lupa Absen Masuk' bulan ini.`;
+            tombolDisabled = true;
+        } else if (pilihan === 'Lupa Absen Pulang' && kuotaLupaPulang >= MAKSIMAL_KUOTA) {
+            pesan = `Anda sudah mencapai batas maksimal (2x) untuk pengajuan 'Lupa Absen Pulang' bulan ini.`;
+            tombolDisabled = true;
+        }
+
+        kuotaWarningDiv.textContent = pesan;
+        kuotaWarningDiv.style.display = pesan ? 'block' : 'none';
+        submitButton.disabled = tombolDisabled;
+    }
+
+    // Tambahkan event listener ke semua checkbox
+    const allCheckBoxes = document.querySelectorAll('input[name="record_ids"]');
+    allCheckBoxes.forEach(box => {
+        box.onchange = updateFormAndOptions;
+    });
+
+    // Tambahkan event listener ke dropdown jenis surat juga
+    jenisSelect.addEventListener('change', cekKuota);
+</script>
+
+</body>
+</html>
