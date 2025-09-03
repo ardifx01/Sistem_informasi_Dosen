@@ -1,4 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash, send_from_directory, send_file
+from flask_session import Session
+from redis import Redis
 import sqlite3
 from datetime import datetime, timedelta
 import os
@@ -7,12 +9,30 @@ import calendar
 import pandas as pd
 import io
 
-
 app = Flask(__name__)
-app.secret_key = 'ini_adalah_kunci_rahasia_sistem_klarifikasi_dosen'
-DATABASE = 'database.db'
-UPLOAD_FOLDER = 'uploads'
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+# app.secret_key = 'ini_adalah_kunci_rahasia_sistem_klarifikasi_dosen'
+# DATABASE = 'database.db'
+# UPLOAD_FOLDER = 'uploads'
+# app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+# # --- Konfigurasi Flask-Session dengan Redis ---
+# app.config["SESSION_PERMANENT"] = False
+# app.config["SESSION_TYPE"] = "redis"
+# app.config["SESSION_USE_SIGNER"] = True  # biar cookie lebih aman
+# app.config["SESSION_REDIS"] = redis.from_url(os.environ.get("REDIS_URL"))
+# Session(app)
+
+app.secret_key = os.getenv("SECRET_KEY", "default_secret_key")
+
+# --- Konfigurasi Session ---
+app.config["SESSION_PERMANENT"] = False
+app.config["SESSION_TYPE"] = os.getenv("SESSION_TYPE", "filesystem")
+
+if app.config["SESSION_TYPE"] == "redis":
+    app.config["SESSION_REDIS"] = Redis.from_url(os.getenv("SESSION_REDIS"))
+
+Session(app)
+
 
 # --- Fungsi Bantuan ---
 def get_db_connection():
