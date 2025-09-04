@@ -753,10 +753,10 @@ def logout():
     session.clear()
     return redirect(url_for('login'))
 
-if __name__ == '__main__':
-    if not os.path.exists(UPLOAD_FOLDER):
-        os.makedirs(UPLOAD_FOLDER)
-    app.run(debug=True)
+# if __name__ == '__main__':
+#     if not os.path.exists(UPLOAD_FOLDER):
+#         os.makedirs(UPLOAD_FOLDER)
+#     app.run(debug=True)
 
 # if __name__ == "__main__":
 #     # Pastikan folder upload ada
@@ -768,9 +768,17 @@ if __name__ == '__main__':
 #     app.run(host="0.0.0.0", port=port)
 
     # Baca debug dari ENV
-debug_mode = str(os.environ.get("FLASK_DEBUG", "0")).lower() in ("1", "true", "yes")
+# debug_mode = str(os.environ.get("FLASK_DEBUG", "0")).lower() in ("1", "true", "yes")
 
     # Port default 5000 (lokal), Railway inject $PORT
-port = int(os.environ.get("PORT", 5000))
+# port = int(os.environ.get("PORT", 5000))
 
-app.run(host="0.0.0.0", port=port, debug=debug_mode)
+if __name__ == "__main__":
+    # Hanya untuk lokal development
+    if not os.path.exists(app.config["UPLOAD_FOLDER"]):
+        os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
+
+    debug_mode = str(os.environ.get("FLASK_DEBUG", "0")).lower() in ("1", "true", "yes")
+    port = int(os.environ.get("PORT", 5000))
+
+    app.run(host="0.0.0.0", port=port, debug=debug_mode)
