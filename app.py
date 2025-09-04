@@ -78,26 +78,12 @@ def login():
         conn = get_db_connection()
         user = conn.execute('SELECT * FROM users WHERE nip = ? AND password = ?', (nip, password)).fetchone()
         conn.close()
-        # if user and check_password_hash(user['password'], password):
-        #     session['user_id'] = user['nip']
-        #     session['user_name'] = user['nama_lengkap']
-        #     session['user_role'] = user['role']
-        #     session['user_jurusan'] = user['jurusan']
-
-        #     if user['role'] == 'Dosen':
-        #         return redirect(url_for('dashboard_dosen'))
-        #     elif user['role'] == 'Kajur':
-        #         return redirect(url_for('dashboard_kajur'))
-        #     elif user['role'] == 'Admin': 
-        #         return redirect(url_for('dashboard_admin'))
-        # else:
-        #     error = 'NIP atau Password salah.'
-        if user:
+        if user and check_password_hash(user['password'], password):
             session['user_id'] = user['nip']
             session['user_name'] = user['nama_lengkap']
             session['user_role'] = user['role']
             session['user_jurusan'] = user['jurusan']
-            
+
             if user['role'] == 'Dosen':
                 return redirect(url_for('dashboard_dosen'))
             elif user['role'] == 'Kajur':
@@ -106,6 +92,20 @@ def login():
                 return redirect(url_for('dashboard_admin'))
         else:
             error = 'NIP atau Password salah.'
+        # if user:
+        #     session['user_id'] = user['nip']
+        #     session['user_name'] = user['nama_lengkap']
+        #     session['user_role'] = user['role']
+        #     session['user_jurusan'] = user['jurusan']
+            
+        #     if user['role'] == 'Dosen':
+        #         return redirect(url_for('dashboard_dosen'))
+        #     elif user['role'] == 'Kajur':
+        #         return redirect(url_for('dashboard_kajur'))
+        #     elif user['role'] == 'Admin': 
+        #         return redirect(url_for('dashboard_admin'))
+        # else:
+        #     error = 'NIP atau Password salah.'
     return render_template('login.html', error=error)
 
 # --- Rute Dosen ---
