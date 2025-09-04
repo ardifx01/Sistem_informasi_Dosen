@@ -8,19 +8,16 @@ from werkzeug.utils import secure_filename
 import calendar
 import pandas as pd
 import io
+import logging   # <--- ini baris import logging
 
-app = Flask(__name__)
-# app.secret_key = 'ini_adalah_kunci_rahasia_sistem_klarifikasi_dosen'
-# DATABASE = 'database.db'
-# UPLOAD_FOLDER = 'uploads'
-# app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+# setup logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s"
+)
 
-# # --- Konfigurasi Flask-Session dengan Redis ---
-# app.config["SESSION_PERMANENT"] = False
-# app.config["SESSION_TYPE"] = "redis"
-# app.config["SESSION_USE_SIGNER"] = True  # biar cookie lebih aman
-# app.config["SESSION_REDIS"] = redis.from_url(os.environ.get("REDIS_URL"))
-# Session(app)
+app = Flask(__name__)   # inisialisasi app Flask
+app.logger.info("Aplikasi Flask sudah start 🚀")   # logging pertama kali
 
 app.secret_key = os.getenv("SECRET_KEY", "default_secret_key")
 
