@@ -19,17 +19,33 @@ logging.basicConfig(
 app = Flask(__name__)   # inisialisasi app Flask
 app.logger.info("Aplikasi Flask sudah start 🚀")   # logging pertama kali
 
-app.secret_key = os.getenv("SECRET_KEY", "default_secret_key")
+# --- SECRET KEY ---
+SECRET_KEY = os.getenv("SECRET_KEY")
+if not SECRET_KEY:
+    # Kalau di production tapi SECRET_KEY kosong → langsung error
+    if os.getenv("RAILWAY_STATIC_URL") or os.getenv("FLASK_ENV") == "production":
+        raise RuntimeError("SECRET_KEY tidak ditemukan di environment. Set di Railway > Variables.")
+    # Fallback hanya untuk development lokal
+    SECRET_KEY = "dev-secret-key"
+
+app.secret_key = SECRET_KEY
 
 # --- Konfigurasi Session ---
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = os.getenv("SESSION_TYPE", "filesystem")
 
+# Cookie Hardening
+app.config["SESSION_COOKIE_HTTPONLY"] = True
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+app.config["SESSION_COOKIE_SECURE"] = bool(
+    os.getenv("RAILWAY_STATIC_URL") or os.getenv("FLASK_ENV") == "production"
+)
+
+# Redis (jika SESSION_TYPE=redis)
 if app.config["SESSION_TYPE"] == "redis":
     app.config["SESSION_REDIS"] = Redis.from_url(os.getenv("SESSION_REDIS"))
 
 Session(app)
-
 
 # --- Fungsi Bantuan ---
 def get_db_connection():

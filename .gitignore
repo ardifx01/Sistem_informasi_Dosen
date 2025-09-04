@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pdb
+
+# Virtual env
+.env
+.venv/
+env/
+venv/
+ENV/
+
+# Jupyter / VSCode / IDE
+.ipynb_checkpoints
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Flask / Project
+instance/
+uploads/
+*.log
+
+# Database
+# database.db
+# *.sqlite3
+
+# # Excel / Data files
+# *.xlsx
+# *.xls
+# *.csv
+
+# Security
+secrets.json
+*.pem
+*.key
