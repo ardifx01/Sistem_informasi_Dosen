@@ -20,6 +20,13 @@ logging.basicConfig(
 app = Flask(__name__)   # inisialisasi app Flask
 app.logger.info("Aplikasi Flask sudah start 🚀")   # logging pertama kali
 
+# --- Upload folder (buat default & set ke config) ---
+UPLOAD_FOLDER = os.path.join(os.getcwd(), "uploads")
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+# Pastikan ukuran maksimal upload (opsional): misal 16 MB
+app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024
+
+
 # --- SECRET KEY ---
 SECRET_KEY = os.getenv("SECRET_KEY")
 if not SECRET_KEY:
@@ -47,6 +54,9 @@ if app.config["SESSION_TYPE"] == "redis":
     app.config["SESSION_REDIS"] = Redis.from_url(os.getenv("SESSION_REDIS"))
 
 Session(app)
+
+# --- Konfigurasi Path Database ---
+DATABASE = os.getenv("DATABASE", "database.db")
 
 # --- Fungsi Bantuan ---
 def get_db_connection():
@@ -749,13 +759,18 @@ if __name__ == '__main__':
     app.run(debug=True)
 
 # if __name__ == "__main__":
+#     # Pastikan folder upload ada
+#     if not os.path.exists(app.config["UPLOAD_FOLDER"]):
+#         os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
+
+# if __name__ == "__main__":
 #     port = int(os.environ.get("PORT", 5000))
 #     app.run(host="0.0.0.0", port=port)
 
     # Baca debug dari ENV
-    debug_mode = str(os.environ.get("FLASK_DEBUG", "0")).lower() in ("1", "true", "yes")
+debug_mode = str(os.environ.get("FLASK_DEBUG", "0")).lower() in ("1", "true", "yes")
 
     # Port default 5000 (lokal), Railway inject $PORT
-    port = int(os.environ.get("PORT", 5000))
+port = int(os.environ.get("PORT", 5000))
 
-    app.run(host="0.0.0.0", port=port, debug=debug_mode)
+app.run(host="0.0.0.0", port=port, debug=debug_mode)
