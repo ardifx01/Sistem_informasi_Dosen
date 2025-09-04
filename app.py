@@ -712,9 +712,14 @@ if __name__ == '__main__':
         os.makedirs(UPLOAD_FOLDER)
     app.run(debug=True)
 
+# if __name__ == "__main__":
+#     port = int(os.environ.get("PORT", 5000))
+#     app.run(host="0.0.0.0", port=port)
 
+    # Baca debug dari ENV
+    debug_mode = str(os.environ.get("FLASK_DEBUG", "0")).lower() in ("1", "true", "yes")
 
-
-if __name__ == "__main__":
+    # Port default 5000 (lokal), Railway inject $PORT
     port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+
+    app.run(host="0.0.0.0", port=port, debug=debug_mode)
