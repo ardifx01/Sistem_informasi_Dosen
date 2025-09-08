@@ -69,59 +69,91 @@ def get_db_connection():
 def index():
     return redirect(url_for('login'))
 
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     error = None
-    
+
+    # Kalau sudah login, langsung redirect ke dashboard sesuai role
+    # if 'user_id' in session:
+    #     role = session.get('user_role')
+    #     if role == 'Dosen':
+    #         return redirect(url_for('dashboard_dosen'))
+    #     elif role == 'Kajur':
+    #         return redirect(url_for('dashboard_kajur'))
+    #     elif role == 'Admin':
+    #         return redirect(url_for('dashboard_admin'))
+    #     else:
+    #         # role aneh -> bersihkan session supaya tidak stuck
+    #         session.clear()
+
     if 'user_id' in session:
-        role = session.get('user_role')
-        if role == 'Dosen':
-            return redirect(url_for('dashboard_dosen'))
-        elif role == 'Kajur':
-            return redirect(url_for('dashboard_kajur'))
-        elif role == 'Admin':
-            return redirect(url_for('dashboard_admin'))
-        else:
-            # role aneh -> bersihkan session supaya tidak stuck
-            session.clear()
-            
+        return redirect(url_for('login_blocked'))
+
+    # Kalau user submit form login
     if request.method == 'POST':
         nip = request.form['nip']
         password = request.form['password']
+
         conn = get_db_connection()
-        user = conn.execute('SELECT * FROM users WHERE nip = ? AND password = ?', (nip, password)).fetchone()
+        user = conn.execute(
+            'SELECT * FROM users WHERE nip = ? AND password = ?',
+            (nip, password)
+        ).fetchone()
         conn.close()
-        # if user and check_password_hash(user['password'], password):
-        #     session['user_id'] = user['nip']
-        #     session['user_name'] = user['nama_lengkap']
-        #     session['user_role'] = user['role']
-        #     session['user_jurusan'] = user['jurusan']
 
-        #     if user['role'] == 'Dosen':
-        #         return redirect(url_for('dashboard_dosen'))
-        #     elif user['role'] == 'Kajur':
-        #         return redirect(url_for('dashboard_kajur'))
-        #     elif user['role'] == 'Admin': 
-        #         return redirect(url_for('dashboard_admin'))
-        # else:
-        #     error = 'NIP atau Password salah.'
-
-   
         if user:
+            # Simpan data ke session
             session['user_id'] = user['nip']
             session['user_name'] = user['nama_lengkap']
             session['user_role'] = user['role']
             session['user_jurusan'] = user['jurusan']
-            
+
+            # Redirect sesuai role
             if user['role'] == 'Dosen':
                 return redirect(url_for('dashboard_dosen'))
             elif user['role'] == 'Kajur':
                 return redirect(url_for('dashboard_kajur'))
-            elif user['role'] == 'Admin': 
+            elif user['role'] == 'Admin':
                 return redirect(url_for('dashboard_admin'))
         else:
+            # Password / NIP salah
             error = 'NIP atau Password salah.'
-    return render_template('login.html', error=error)
+            # redirect ke /login GET + param error
+            return redirect(url_for('login', error='1'))
+
+    # Kalau GET request → tampilkan form login
+    error_message = None
+    if request.args.get('error') == '1':
+        error_message = 'NIP atau Password salah.'
+    return render_template('login.html', error=error_message)
+
+
+# --- Rute jika user back ke halaman login ---
+# @app.route('/login-blocked')
+# def login_blocked():
+#     return render_template('login_blocked.html')
+# --- Rute jika user back ke halaman login ---
+@app.route('/login-blocked')
+def login_blocked():
+    # pastikan user sudah login
+    if 'user_role' not in session:
+        return redirect(url_for('login'))
+
+    # mapping role ke dashboard
+    role_redirect_map = {
+        "Dosen": url_for('dashboard_dosen'),
+        "Kajur": url_for('dashboard_kajur'),
+        "Admin": url_for('dashboard_admin')
+    }
+
+    role = session['user_role']
+    dashboard_url = role_redirect_map.get(role, url_for('login'))
+
+    return render_template('login_blocked.html', dashboard_url=dashboard_url)
+
+
+
 
 # Handle Back Session 
 @app.after_request
