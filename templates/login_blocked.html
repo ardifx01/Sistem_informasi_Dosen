@@ -1,11 +1,96 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-  <title>Login Tidak Tersedia</title>
+  <meta charset="UTF-8">
+  <title>Akses Login Diblokir</title>
+  <style>
+    /* Reset dasar */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: url("https://res.cloudinary.com/dvul7dq3b/image/upload/v1755843240/backgroundwebp_vc0pzl.webp") no-repeat center center/cover;
+    }
+
+    .overlay {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 0;
+    }
+
+    .blocked-container {
+      position: relative;
+      z-index: 1;
+      background: rgba(10, 25, 47, 0.85);
+      padding: 40px 30px;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+      width: 340px;
+      text-align: center;
+      animation: fadeIn 0.8s ease-in-out;
+      color: #fff;
+      backdrop-filter: blur(6px);
+    }
+
+    .blocked-container img {
+      width: 80px;
+      margin-bottom: 15px;
+    }
+
+    .blocked-container h2 {
+      margin-bottom: 15px;
+      color: #fff;
+      font-size: 22px;
+      letter-spacing: 0.5px;
+    }
+
+    .blocked-container p {
+      margin-bottom: 20px;
+      font-size: 15px;
+      color: #ddd;
+    }
+
+    a.button {
+      display: inline-block;
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, #007bff, #0056b3);
+      border-radius: 8px;
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: transform 0.2s, background 0.3s;
+    }
+
+    a.button:hover {
+      transform: translateY(-2px);
+      background: linear-gradient(135deg, #0069d9, #004494);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
 </head>
 <body>
-  <h2>Anda sudah login</h2>
-  <p>Silakan kembali ke dashboard.</p>
-    <a href="{{ dashboard_url }}">➡️ Dashboard</a>
+  <div class="overlay"></div>
+  <div class="blocked-container">
+    <img src="https://res.cloudinary.com/dvul7dq3b/image/upload/v1755843240/logowebp_bqssky.webp" alt="Logo">
+    <h2>Akses Login Tidak Tersedia</h2>
+    <p>Anda sudah login sebelumnya. Silakan lanjut ke dashboard.</p>
+    <a href="{{ dashboard_url }}" class="button">Ke Dashboard</a>
+  </div>
 </body>
 </html>
