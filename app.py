@@ -92,6 +92,19 @@ def login():
         #         return redirect(url_for('dashboard_admin'))
         # else:
         #     error = 'NIP atau Password salah.'
+
+    if 'user_id' in session:
+        role = session.get('user_role')
+        if role == 'Dosen':
+            return redirect(url_for('dashboard_dosen'))
+        elif role == 'Kajur':
+            return redirect(url_for('dashboard_kajur'))
+        elif role == 'Admin':
+            return redirect(url_for('dashboard_admin'))
+        else:
+            # role aneh -> bersihkan session supaya tidak stuck
+            session.clear()
+
         if user:
             session['user_id'] = user['nip']
             session['user_name'] = user['nama_lengkap']
@@ -107,6 +120,14 @@ def login():
         else:
             error = 'NIP atau Password salah.'
     return render_template('login.html', error=error)
+
+# Handle Back Session 
+@app.after_request
+def add_no_cache_headers(response):
+    response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, private, max-age=0"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    return response
 
 # --- Rute Dosen ---
 
